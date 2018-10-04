@@ -1,12 +1,9 @@
 // This file will handle the google api calls for index.js
 
-const service_account = 'calendar@sga-slack-calendar.iam.gserviceaccount.com';
-const keyIDs = 'a4057ec010a783c0717a266fe21b4893b35383f9';
-
 // temp calendar representing room 1
-// const roomOneID = '98453t5augch49p0m3a3v5cst0@group.calendar.google.com';
+const roomOneID = '98453t5augch49p0m3a3v5cst0@group.calendar.google.com';
 // temp calendar respresenting room 2
-// const roomTwoID = '7r16kglf0lom0bhshqcfin76sg@group.calendar.google.com';
+const roomTwoID = '7r16kglf0lom0bhshqcfin76sg@group.calendar.google.com';
 
 const fs = require('fs');
 const readline = require('readline');
@@ -145,6 +142,7 @@ exports.handleCheck = function (roomId, times) {
     function check(auth, id, times) {
         console.log('reached');
         let calendar = google.calendar({version: 'v3', auth});
+        let check = true;
         calendar.events.list({
             calendarId: id,
             timeMin: times[0].toISOString(),
@@ -157,7 +155,18 @@ exports.handleCheck = function (roomId, times) {
             if (events.length) {
                 // events found
                 // look for open spots
-                return false;
+
+                // iterates through events
+                for (let ev of events) {
+                    let s = new Date(ev.start.dateTime);            // gets an event's start time
+                    let e = new Date(ev.end.dateTime);              // gets an event's end time
+                    if ((s < times[0] && times[0] < e)
+                        || (e < times[1] && times[1] < e)) {
+                            check = false;
+                            break;
+                    }
+                }
+                return check;
             } else {
                 // no events found
                 return true;
