@@ -31,7 +31,7 @@ fs.readFile('credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Calendar API.
   // authorize(JSON.parse(content), check);
-  //authorize(JSON.parse(content), reserve);           // testing reserve method
+  // authorize(JSON.parse(content), reserve);           // testing reserve method
   authorize(JSON.parse(content), listEvents);        // testing listEvents method
 });
 
@@ -92,8 +92,8 @@ function getAccessToken(oAuth2Client, callback) {
 function listEvents(auth) {
   const calendar = google.calendar({version: 'v3', auth});
   calendar.events.list({
-    calendarId: roomOneID,
-    timeMin: (new Date()).toISOString(),
+    calendarId: roomTwoID,
+    timeMin: (new Date(2018, 8, 21)).toISOString(),
     maxResults: 10,
     singleEvents: true,
     orderBy: 'startTime',
@@ -177,7 +177,7 @@ function reserve(auth) {
         };
         calendar.events.insert({
             auth: auth,
-            calendarId: roomOneID,
+            calendarId: roomTwoID,
             resource: addedEvent
         }, (err, addedEvent) => {
             if (err) return console.log('RESERVE: The API returned an error ' + err);

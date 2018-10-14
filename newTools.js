@@ -1,7 +1,7 @@
 const roomOneID = '98453t5augch49p0m3a3v5cst0@group.calendar.google.com';
 const roomTwoID = '7r16kglf0lom0bhshqcfin76sg@group.calendar.google.com';
 
-const fs = require(fs);
+const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
 
@@ -24,7 +24,7 @@ exports.generateDate = function (date, time) {
 }
 
 exports.verifyDates = function (date1, date2) {
-    return (date1 <=  date2) <= 0;
+    return (date1 <  date2);
 }
 
 exports.handleCheck = function (roomID, times) {
@@ -62,15 +62,18 @@ exports.handleReserve = function (roomID, times) {
 
 
 
-function authorize(creds, callback, roomID, times) {
+function authorize(credentials, callback, roomID, times) {
     const {client_secret, client_id, redirect_uris} = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
-    return fs.readFile(TOKEN_PATH, (err, content) => {
+    return fs.readFile(TOKEN_PATH, (err, token) => {
         if (err) {
             return getAccessToken(oAuth2Client, callback, roomID, times);
         }
         oAuth2Client.setCredentials(JSON.parse(token));
+        let x = callback(oAuth2Client, roomID, times);
+        console.log(x);
+        console.log('yes');
         return callback(oAuth2Client, roomID, times);
     });
 }
@@ -179,7 +182,7 @@ function reserve(auth, roomID, times) {
     if (condition) {
         let addedEvent = {
             summary: 'New Event',
-            start: {'dateTime': times[0].toISOString()}
+            start: {'dateTime': times[0].toISOString()},
             end: {'dateTime': times[1].toISOString()}
         };
         calendar.events.insert({

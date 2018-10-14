@@ -40,6 +40,7 @@ app.post('/check', function (req, res) {
     if (tools.verifyDates(startDate, endDate)) {
         if (room == 'room1') {
             data = tools.handleCheck(roomOneCalId, times);
+            // console.log(tools.handleCheck(roomOneCalId, times));
         } else if (room == 'room2') {
             data = tools.handleCheck(roomTwoCalId, times);
         } else {
@@ -105,6 +106,19 @@ app.post('/reserve', function (req, res) {
         return;
     }
 
+});
+
+app.post('/calendar_help', function (req, res) {
+    let help_check = 'Check use: "/check ROOM MM/DD/YYYY HH:MM HH:MM"\n';
+    let help_reserve = 'Reserve use: "/reserve ROOM MM/DD/YYYY HH:MM HH:MM"';
+    let help = help_check + help_reserve;
+
+    let data = {
+        response_type: 'ephemeral',
+        text: help
+    };
+    res.json(data);
+    return;
 });
 
 
