@@ -63,7 +63,7 @@ exports.handleReserve = function (roomID, times) {
 
 
 
-async function authorize(credentials, callback, roomID, times) {
+function authorize(credentials, callback, roomID, times) {
     const {client_secret, client_id, redirect_uris} = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
@@ -151,7 +151,7 @@ function check(auth, roomID, times) {
 function reserve(auth, roomID, times) {
     let calendar = google.calendar({version: 'v3', auth});
     // has to check if the room is available
-    let condition = calendar.event.list({
+    let condition = calendar.events.list({
         calendarId: roomID,
         timeMin: times[0].toISOString(),
         timeMax: times[1].toISOString(),
