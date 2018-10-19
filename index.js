@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const moment = require('moment');
 const tools = require('./newTools');
+const promise = require('promise');
 
 // calendar ids for room 1 and room 2
 const roomOneCalId = '98453t5augch49p0m3a3v5cst0@group.calendar.google.com';
@@ -39,10 +40,10 @@ app.post('/check', function (req, res) {
 
     if (tools.verifyDates(startDate, endDate)) {
         if (room == 'room1') {
-            data = tools.handleCheck(roomOneCalId, times);
+            data = promise.denodeify(tools.handleCheck(roomOneCalId, times), );
             // console.log(tools.handleCheck(roomOneCalId, times));
         } else if (room == 'room2') {
-            data = tools.handleCheck(roomTwoCalId, times);
+            data = promise.denodeify(tools.handleCheck(roomTwoCalId, times));
         } else {
             data = {
                 response_type: 'ephemeral',
@@ -84,9 +85,9 @@ app.post('/reserve', function (req, res) {
 
     if (tools.verifyDates(startDate, endDate)) {
         if (room == 'room1') {
-            data = tools.handleReserve(roomOneCalId, times);
+            data = promise.denodeify(tools.handleReserve(roomOneCalId, times));
         } else if (room == 'room2') {
-            data = tools.handleReserve(roomTwoCalId, times);
+            data = promise.denodeify(tools.handleReserve(roomTwoCalId, times));
         } else {
             data = {
                 response_type: 'ephemeral',

@@ -4,6 +4,7 @@ const roomTwoID = '7r16kglf0lom0bhshqcfin76sg@group.calendar.google.com';
 const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
+const promise = require('promise');
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 const TOKEN_PATH = 'token.json';
@@ -62,7 +63,7 @@ exports.handleReserve = function (roomID, times) {
 
 
 
-function authorize(credentials, callback, roomID, times) {
+async function authorize(credentials, callback, roomID, times) {
     const {client_secret, client_id, redirect_uris} = credentials.installed;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
