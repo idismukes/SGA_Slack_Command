@@ -9,23 +9,29 @@ const promise = require('promise');
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 const TOKEN_PATH = 'token.json';
 
-// slack safety stuff
-// const express = require('express');
-// const bodyParser = require('body-parser');
-// const app = express();
-//
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-// slack safety stuff
-
-
 exports.generateDate = function (date, time) {
-    let dateArray = date.split("/");
-    let timeArray = time.split(":");
+    let month;
+    let day;
+    let year;
+    if (date == 'today') {
+        let temp = new Date();
+        month = temp.getMonth();
+        day = temp.getDate();
+        year = temp.getFullYear();
+    } else if (date == 'tomorrow') {
+        let temp = new Date();
+        month = temp.getMonth();
+        day = temp.getDate() + 1;
+        year = temp.getFullYear();
+    } else {
+        let dateArray = date.split("/");
 
-    let month = parseInt(dateArray[0]) - 1;
-    let day = parseInt(dateArray[1]);
-    let year = parseInt(dateArray[2]);
+        month = parseInt(dateArray[0]) - 1;
+        day = parseInt(dateArray[1]);
+        year = parseInt(dateArray[2]);
+    }
+
+    let timeArray = time.split(":");
 
     let hour = parseInt(timeArray[0]);
     let minute = parseInt(timeArray[1]);
@@ -128,7 +134,8 @@ function check(auth, room, times, test) {
             for (let ev of events) {
                 let start = new Date(ev.start.dateTime);
                 let end = new Date(ev.end.dateTime);
-                if ((start <= times[0] && times[0] < end) || (start <= times[1] && times[1] < end)) {
+                if ((start <= times[0] && times[0] < end) || (start <= times[1] && times[1] < end)
+                    || (times[0] <= start && start < times[1]) || (times[0] <= end && end < times[1])) {
                     check = false;
                     break;
                 }
@@ -168,14 +175,15 @@ async function reserve(auth, room, times, test) {
             for (let ev of events) {
                 let start = new Date(ev.start.dateTime);
                 let end = new Date(ev.end.dateTime);
-                if ((start <= times[0] && times[0] < end) || (start <= times[1] && times[1] < end)) {
+                if ((start <= times[0] && times[0] < end) || (start < times[1] && times[1] < end)
+                    || (times[0] <= start && start < times[1]) || (times[0] <= end && end < times[0])) {
                     check = false;
                     break;
                 }
             }
         }
     });
-    await sleep(1000);      //DONT TOUCH THIS LINE OF CODE OTHERWISE IT DOES NOT WORK
+    await sleep(500);      //DONT TOUCH THIS LINE OF CODE OTHERWISE IT DOES NOT WORK
     if (check) {
         let newEvent = {
             summary: 'Event',
